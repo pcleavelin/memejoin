@@ -45,3 +45,8 @@ On linux, just install ffmpeg through your distro's package manager.
 After install those, just run `npm install` to install the dependencies of the bot, and finally run `node bot.js`
 
 If you run into any problems just create an issue on this repo.
+
+## Potential Issues
+Not the most tidy code, I maybe missed some error checking if a few edge cases, but for the most part it works. :P
+
+If multiple people join the voice channel at the same time, weird things could happen. Will fix later. Maybe. Sometime...
