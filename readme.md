@@ -35,8 +35,8 @@ Currently mp3 files don't work too well. You're better of just finding a youtube
 ```
 
 ## Running
-You will need to install [node]("https://nodejs.org/en/") version 10 and npm (they are usually packaged together).
-If you're on Windows, you'll have to install [ffmpeg]("https://ffmpeg.org/") and through npm you need to install `windows-build-tools`
+You will need to install [node](https://nodejs.org/en/) version 10 and npm (they are usually packaged together).
+If you're on Windows, you'll have to install [ffmpeg](https://ffmpeg.org/) and through npm you need to install `windows-build-tools`
 
 ```npm install --global --production windows-build-tools```
 
