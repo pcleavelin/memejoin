@@ -47,6 +47,6 @@ After install those, just run `npm install` to install the dependencies of the b
 If you run into any problems just create an issue on this repo.
 
 ## Potential Issues
-Not the most tidy code, I maybe missed some error checking if a few edge cases, but for the most part it works. :P
+Not the most tidy code, I maybe missed some error checking in a few edge cases, but for the most part it works. :P
 
-If multiple people join the voice channel at the same time, weird things could happen. Will fix later. Maybe. Sometime...
+If multiple people join a voice channel at the same time, weird things could happen. Will fix later. Maybe. Sometime...
