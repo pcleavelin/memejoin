@@ -167,7 +167,9 @@ function playNoise(con, name, type, soundPath, volume) {
 			volume: volume
 		});
 	} else if(type.toLowerCase() === 'file') {
-		evt = con.play(`./sounds/${soundPath}`);
+		evt = con.play(`./sounds/${soundPath}`, {
+			volume: volume
+		});
 	} else {
 		logger.error(`Invalid type '${type}' noise`);
 	}
