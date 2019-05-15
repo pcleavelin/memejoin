@@ -4,7 +4,7 @@ This bot will play a customizable sound bite when a person joins a voice channel
 You will need to create an `auth.json` and `settings.json` beside `bot.js`
 
 ## Sound Files
-Currently mp3 files don't work too well. You're better of just finding a youtube video of your sound or uploading your own. Eventually I'll see what the issue is. But if you /really/ want to use mp3s, just create a sounds folder next to bot.js and put them in there.
+Just create a sounds folder next to bot.js and put them in there.
 
 ## Example of `auth.json`
 ```

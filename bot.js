@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var Discord = require('discord.js');
 var winston = require('winston');
 var ytdl = require('ytdl-core');
@@ -55,61 +57,75 @@ client.on('message', msg => {
 	}
 });
 
-client.on('voiceStateUpdate', (oldMember, newMember) => {
+client.on('voiceStateUpdate', (oldState, newState) => {
+	let oldMember = oldState.member;
+	let newMember = newState.member;
+
 	let name = newMember.displayName;
 
 	if(name === client.user.username) {
 		return;
 	}
 
-	let oldVC = oldMember.voiceChannel;
-	let newVC = newMember.voiceChannel;
+	let oldVC = oldState.channel;
+	let newVC = newState.channel;
 
-	// This event gets triggered when ther user does anything in a voice channel
-	// so we want to make sure we only trigger this piece of code when they enter or leave a channel
-	if(oldVC !== newVC) {
-		// Check if user is leaving the voice channel
-		if(oldVC !== null && typeof oldVC !== 'undefined') {
-			let m = oldVC.members.find(m => m.displayName === name);
-
-			// Check if the user actually left the channel
-			if(m === null || typeof m === 'undefined') {
-				logger.info(`${name} left voice channel ${oldVC.name}`)
-				oldVC.leave();
-				logger.info(`Left from ${oldVC.name}`);
-			}
-		}
-
-		// Check if user is entering the voice channel
-		if(newVC !== null && typeof newVC !== 'undefined') {
-
+	if(newVC !== null && typeof newVC !== 'undefined') {
+		// This event gets triggered when ther user does anything in a voice channel
+		// so we want to make sure we only trigger this piece of code when they enter a channel
+		if(oldVC === null || typeof oldVC === 'undefined' || newVC.id !== oldVC.id) {
 			// Check if the user is actually in the channel
 			let m = newVC.members.find(m => m.displayName === name);
 			if(m !== null && typeof m !== 'undefined') {
 				doUserEnter(m);
 			}
+		} else {
+			logger.info(oldVC.name);
 		}
 	}
 });
 
 function doUserEnter(member) {
+	const channel_name = member.voice.channel.name;
+	const chan_setting = settings.channels[channel_name];
+	const name = member.displayName;
+
+	if(chan_setting === null || typeof chan_setting === 'undefined' ||
+		chan_setting.enterUsers === null || typeof chan_setting.enterUsers === 'undefined' ||
+		chan_setting.enterUsers[name] === null || typeof chan_setting.enterUsers[name] === 'undefined')
+	{
+		logger.info(`No UserEnteredNoise for ${name} in channel ${channel_name}`);
+		return;
+	}
+
+	let enterSoundPath = chan_setting.enterUsers[name].enterSound;
+	if(enterSoundPath === null || typeof enterSoundPath === 'undefined') {
+		logger.error(`No path to enter sound for user ${name} in channel ${channel_name}`);
+		return;
+	}
+
+	let type = chan_setting.enterUsers[name].type;
+	if(type === null || typeof type === 'undefined') {
+		logger.error(`No type defined for enterSound for user ${name} in voice channel ${channel_name}`);
+		return;
+	}
+
+	let volume = !!settings.youtubeVolume ? settings.youtubeVolume : 0.25
+
 	tryJoinUserVoiceChannel(member)
 		.then(con => {
 			logger.info(`Connected with ${member.displayName}`);
 
 			// Have a delay before sending audio to makek sure the bot is fully connected first
 			setTimeout(() => {
-					playUserEnteredNoise(con, con.channel.name, member.displayName);
-
-					// Leave after attempting to play sound
-					// newVC.leave();
+					playNoise(con, member.displayName, type, enterSoundPath, volume);
 				}, settings.userEnteredSoundDelay)
 		})
 		.catch(error => logger.error('Failed to join voice channel: ' + error));
 }
 
 function tryJoinUserVoiceChannel(member) {
-	const vc = member.voiceChannel;
+	const vc = member.voice.channel;
 	const name = member.displayName;
 
 	// Check if user is entering the voice channel
@@ -127,7 +143,7 @@ function tryJoinUserVoiceChannel(member) {
 }
 
 function leaveVoiceChannel(member) {
-	const vc = member.voiceChannel;
+	const vc = member.voice.channel;
 	const name = member.displayName;
 
 	// Check if user is entering the voice channel
@@ -140,45 +156,32 @@ function leaveVoiceChannel(member) {
 	}
 }
 
-function playUserEnteredNoise(con, channelName, name) {
-	const chan_setting = settings.channels[channelName];
-	if(chan_setting === null || typeof chan_setting === 'undefined' ||
-		chan_setting.enterUsers === null || typeof chan_setting.enterUsers === 'undefined' ||
-		chan_setting.enterUsers[name] === null || typeof chan_setting.enterUsers[name] === 'undefined')
-	{
-		logger.info(`No UserEnteredNoise for ${name} in channel ${channelName}`);
-		return;
-	}
-
-	let enterSoundPath = chan_setting.enterUsers[name].enterSound;
-	if(enterSoundPath === null || typeof enterSoundPath === 'undefined') {
-		logger.error(`No path to enter sound for user ${name} in channel ${channelName}`);
-		return;
-	}
-
-	let type = chan_setting.enterUsers[name].type;
-	if(type === null || typeof type === 'undefined') {
-		logger.error(`No type defined for enterSound for user ${name} in voice channel ${channelName}`);
-	} 
-	// Play audio from a youtube video
-	else if(type.toLowerCase() === 'youtube') {
-		const stream = ytdl(enterSoundPath, {
+function playNoise(con, name, type, soundPath, volume) {
+	let evt = null;
+	if(type.toLowerCase() === 'youtube') {
+		const stream = ytdl(soundPath, {
 			filter: 'audioonly'
 		});
-		con.playStream(stream, {
+		evt = con.play(stream, {
 			seek: 0,
-			volume: !!settings.youtubeVolume ? settings.youtubeVolume : 0.25
+			volume: volume
 		});
 	} else if(type.toLowerCase() === 'file') {
-		con.playFile(`./sounds/${enterSoundPath}`);
+		evt = con.play(`./sounds/${soundPath}`);
 	} else {
-		logger.error(`Invalid type '${type}' defined for enterSound for user ${name} in voice channel ${channelName}`);
+		logger.error(`Invalid type '${type}' noise`);
 	}
 
-	// Attempt to play sound in voice channel
-	// const broadcast = client.createVoiceBroadcast();
-	// broadcast.playFile(`./sounds/${enterSoundPath}`);
-	// con.playBroadcast(broadcast);
+	if(evt !== null && typeof evt !== 'undefined') {
+		evt.on('speaking', isSpeaking => {
+			if(isSpeaking == false) {
+				con.channel.leave();
+			}
+		});
+		evt.on('error', () => {
+			con.channel.leave();
+		});
+	}
 }
 
 client.login(auth.token);
