@@ -42,7 +42,7 @@ If you're on Windows, you'll have to install [ffmpeg](https://ffmpeg.org/) and t
 
 On linux, just install ffmpeg through your distro's package manager.
 
-After install those, just run `yarn` to install the dependencies of the bot, and finally run `node bot.js`
+After installing those, just run `yarn` to install the dependencies of the bot, and finally run `node bot.js`
 
 If you run into any problems just create an issue on this repo.
 
