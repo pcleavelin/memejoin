@@ -35,14 +35,14 @@ Currently mp3 files don't work too well. You're better of just finding a youtube
 ```
 
 ## Running
-You will need to install [node](https://nodejs.org/en/) version 10 and npm (they are usually packaged together).
-If you're on Windows, you'll have to install [ffmpeg](https://ffmpeg.org/) and through npm you need to install `windows-build-tools`
+You will need to install [node](https://nodejs.org/en/) version 10 and [yarn](https://yarnpkg.com).
+If you're on Windows, you'll have to install [ffmpeg](https://ffmpeg.org/) and through yarn you need to install `windows-build-tools`:
 
-```npm install --global --production windows-build-tools```
+```yarn global add windows-build-tools```
 
 On linux, just install ffmpeg through your distro's package manager.
 
-After install those, just run `npm install` to install the dependencies of the bot, and finally run `node bot.js`
+After install those, just run `yarn` to install the dependencies of the bot, and finally run `node bot.js`
 
 If you run into any problems just create an issue on this repo.
 
