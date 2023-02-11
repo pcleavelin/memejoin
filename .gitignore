@@ -9,6 +9,8 @@ node_modules
 
 # Logs
 logs/
+yarn-error.log
 
 # Don't want binary files
 sounds/
+**/result
