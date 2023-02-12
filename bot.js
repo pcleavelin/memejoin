@@ -4,8 +4,8 @@ var { Client, Events, GatewayIntentBits } = require('discord.js');
 var { AudioPlayerStatus, joinVoiceChannel, createAudioPlayer, createAudioResource } = require("@discordjs/voice");
 var winston = require('winston');
 var ytdl = require('ytdl-core');
-var auth = require('./auth.json');
-var settings = require('./settings.json');
+var auth = require('./config/auth.json');
+var settings = require('./config/settings.json');
 
 var logger = winston.createLogger({
 	level: 'debug',

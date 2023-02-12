@@ -1,0 +1,19 @@
+{
+    "userEnteredSoundDelay": 100,
+    "channels": {
+        "CHANNEL_NAME_HERE": {
+            "enterUsers": {
+                "USER_NICKNAME_HERE": {
+                    "type": "file",
+                    "enterSound": "soundFile.mp3",
+                    "youtubeVolume": 20
+                },
+                "ANOTHER_USER_NICKNAME_HERE": {
+                    "type": "youtube",
+                    "enterSound": "<youtube-url-here>",
+                    "youtubeVolume": 20
+                }
+            }
+        }
+    }
+}

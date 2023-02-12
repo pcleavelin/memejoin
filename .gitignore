@@ -1,9 +1,3 @@
-# Don't have token in source control
-auth.json
-
-# Each user of the bot should have their own settings file
-settings.json
-
 # node crap
 node_modules
 

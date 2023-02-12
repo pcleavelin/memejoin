@@ -46,22 +46,18 @@
             name = "memejoin";
             targetPkgs = pkgs: (with pkgs; [ nodejs yarnPackage ffmpeg opusTools ]);
             runScript = "node ${yarnPackage.outPath}/bin/memejoin";
-
-            extraInstallCommands = ''
-              mkdir -p $out/bin
-
-              cp ${authJson} $out/bin
-              cp ${settingsJson} $out/bin
-            '';
           };
 
           docker = pkgs.dockerTools.buildImage {
-            name = "memejoin-docker";
+            name = "memejoin";
+            tag = "v0.2.2-alpha";
             copyToRoot = pkgs.buildEnv {
               name = "image-root";
               paths = [ nodejs ffmpeg opusTools yarnPackage ];
             };
             config = {
+              WorkingDir = "/data";
+              Volumes = { "/data/config" = { }; "/data/sounds" = { }; };
               Entrypoint = [ "node" "/bin/memejoin" ];
             };
           };
