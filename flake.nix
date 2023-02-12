@@ -13,6 +13,8 @@
         inherit system;
       };
       src = ./.;
+      authJson = ./auth.json;
+      settingsJson = ./settings.json;
       yarnPackage = with pkgs; mkYarnPackage {
         inherit src;
 
@@ -39,22 +41,29 @@
           buildInputs = with pkgs; [ nodejs yarn yarn2nix python3 gnumake gcc ];
         };
 
-        packages = with pkgs; flake-utils.lib.flattenTree {
+        packages = with pkgs; flake-utils.lib.flattenTree rec {
           default = buildFHSUserEnv rec {
             name = "memejoin";
             targetPkgs = pkgs: (with pkgs; [ nodejs yarnPackage ffmpeg opusTools ]);
             runScript = "node ${yarnPackage.outPath}/bin/memejoin";
 
-            #extraInstallCommands = ''
-            #  sed -i '1i#!/usr/bin/env node' bin/memejoin
+            extraInstallCommands = ''
+              mkdir -p $out/bin
 
-            #  mkdir -p $out/bin
-            #  cat <<EOF > start.sh
-            #  node ${yarnPackage.outPath}/bin/memejoin
-            #  EOF
+              cp ${authJson} $out/bin
+              cp ${settingsJson} $out/bin
+            '';
+          };
 
-            #  cp start.sh $out/bin
-            #'';
+          docker = pkgs.dockerTools.buildImage {
+            name = "memejoin-docker";
+            copyToRoot = pkgs.buildEnv {
+              name = "image-root";
+              paths = [ nodejs ffmpeg opusTools yarnPackage ];
+            };
+            config = {
+              Entrypoint = [ "node" "/bin/memejoin" ];
+            };
           };
         };
       }
