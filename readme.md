@@ -1,3 +1,6 @@
+## Deprecated
+refer to [memejoin-rs](https://github.com/pcleavelin/memejoin-rs)
+
 # MemeJoin Discord Bot
 This bot will play a customizable sound bite when a person joins a voice channel.
 
